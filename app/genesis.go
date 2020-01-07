@@ -81,7 +81,7 @@ func (gs GenesisState) Sanitize() {
 	}
 }
 
-// GenesisAccount defines an account initialized at genesis.
+// GenesisAccount is a struct for account initialization used exclusively during genesis
 type GenesisAccount struct {
 	Address       sdk.AccAddress `json:"address"`
 	Coins         sdk.Coins      `json:"coins"`

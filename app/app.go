@@ -122,7 +122,7 @@ func NewPanaceaApp(
 		auth.ProtoBaseAccount,
 	)
 
-	// add handlers
+	// add keepers
 	app.bankKeeper = bank.NewBaseKeeper(
 		app.accountKeeper,
 		app.paramsKeeper.Subspace(bank.DefaultParamspace),
@@ -214,12 +214,14 @@ func NewPanaceaApp(
 		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper)).
 		AddRoute(aol.QuerierRoute, aol.NewQuerier(app.aolKeeper))
 
-	// initialize BaseApp
+	// initialize stores
 	app.MountStores(
 		app.keyMain, app.keyAccount, app.keyStaking, app.keyMint, app.keyDistr,
 		app.keySlashing, app.keyGov, app.keyFeeCollection, app.keyParams,
 		app.tkeyParams, app.tkeyStaking, app.tkeyDistr, app.keyAOL,
 	)
+
+	// initialize BaseApp
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
@@ -260,7 +262,7 @@ func (app *PanaceaApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock)
 	distr.BeginBlocker(ctx, req, app.distrKeeper)
 
 	// slash anyone who double signed.
-	// NOTE: This should happen after distr.BeginBlocker so that
+	// NOTE: This should happen after distr. BeginBlocker so that
 	// there is nothing left over in the validator fee pool,
 	// so as to keep the CanWithdrawInvariant invariant.
 	// TODO: This should really happen at EndBlocker.
